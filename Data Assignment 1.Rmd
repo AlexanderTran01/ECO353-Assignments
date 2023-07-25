@@ -1,0 +1,63 @@
+---
+title: "Data Assignment 1"
+author: "Alexander Tran"
+date: "3/5/2023"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(jtools)
+library(car)
+library(gtsummary)
+
+```
+
+```{r}
+data <- read.csv("NBA Dataset.xlsx - NBA.csv")
+model <- lm(OIAdj ~ PayRollAj + LuxTaxAdj + ATPAdj + Home.Attendance..Thousand. + Wins + Wins..Lag.1. + Playoff.Wins + Playoff.Wins..Lag.1. + as.factor(Championship) + as.factor(Championship..Lag.1.) + as.factor(Championship..Lag.2.) + Team + Year, data=data)
+```
+
+```{r}
+summary(model)
+```
+
+```{r}
+tbl_regression(model)
+```
+
+
+```{r}
+vif(model)
+data %>% dplyr::select(OIAdj, ATPAdj, PayRollAj, LuxTaxAdj, Wins, Wins..Lag.1., Playoff.Wins, Playoff.Wins..Lag.1., Home.Attendance..Thousand.) %>% cor()
+```
+
+```{r}
+model2 <- lm(OIAdj ~ Team + Year + Home.Attendance..Thousand. + Wins + Wins..Lag.1. + Playoff.Wins +  + ATPAdj + PayRollAj + LuxTaxAdj, data=data)
+summary(model2)
+```
+```{r}
+tbl_regression(model2)
+```
+
+```{r}
+expected_profits <- predict(model, 
+                        newdata = data.frame("Team" = "GOLDEN STATE WARRIORS",
+                                             "Year" = "2018-19",
+                                             "ATPAdj" = 125.43,
+                                             "PayRollAj" = 145.463,
+                                             "LuxTaxAdj" = 51.4878,
+                                             "Wins" = 57,
+                                             "Wins..Lag.1." = 58,
+                                             "Playoff.Wins" = 14,
+                                             "Playoff.Wins..Lag.1." = 16,
+                                             "Championship" = 0,
+                                             "Championship..Lag.1." = 1,
+                                             "Championship..Lag.2." = 1,
+                                             "Home.Attendance..Thousand." = 803.436))
+```
+
